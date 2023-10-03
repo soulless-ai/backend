@@ -1,0 +1,17 @@
+# Игнорировать каталог .git
+.git
+
+# Игнорировать файл .gitignore
+.gitignore
+
+# Игнорировать файл .dockerignore
+.dockerignore
+
+# Игнорировать все файлы .log
+*.log
+
+#Игнорировать каталог vendor
+vendor
+
+# Игнорировать файл composer.lock
+composer.lock

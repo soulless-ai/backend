@@ -9,7 +9,6 @@ WORKDIR /app
 RUN chown -R www-data:www-data .
 
 # Установка зависимостей через Composer
-WORKDIR /app/backend
 RUN composer install --prefer-dist --no-progress --no-interaction
 
 # Экспортируем порт 9000 для PHP-FPM

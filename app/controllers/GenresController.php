@@ -15,8 +15,17 @@ class GenreController extends ActiveController
     {
         $behaviors = parent::behaviors();
         $behaviors['contentNegotiator']['formats']['application/json'] = Response::FORMAT_JSON;
+        $behaviors['corsFilter'] = [
+            'class' => \yii\filters\Cors::className(),
+            'cors' => [
+                'Origin' => ['http://localhost:4200'],
+                'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+                'Access-Control-Request-Headers' => ['*'],
+                'Access-Control-Allow-Credentials' => true,
+            ],
+        ];
         return $behaviors;
-    }
+    }    
 
     // Действие для получения списка жанров
     public function actionIndex()

@@ -14,7 +14,7 @@ return [
             'charset' => 'UTF-8',
             'on beforeSend' => function ($event) {
                 $response = $event->sender;
-                $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:9000');
+                $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:4200'); // Правильный порт
                 $response->headers->set('Access-Control-Allow-Headers', '*');
                 $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
             },

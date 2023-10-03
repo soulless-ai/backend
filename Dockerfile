@@ -14,5 +14,5 @@ RUN composer install --prefer-dist --no-progress --no-interaction
 # Экспортируем порт 9000 для PHP-FPM
 EXPOSE 9000
 
-# Запускаем Yii2 приложение с помощью composer serve
-CMD ["composer", "serve"]
+# Запускаем PHP-FPM
+CMD ["php-fpm"]

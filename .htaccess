@@ -1,9 +1,0 @@
-Options +FollowSymLinks
-IndexIgnore */*
-
-RewriteEngine on
-
-# Если запрос не соответствует существующему файлу или директории, передайте его на index.php
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . index.php

@@ -3,11 +3,11 @@
 namespace app\controllers\api;
 
 use Yii;
-use yii\rest\ActiveController;
 use yii\web\Response;
+use yii\rest\ActiveController;
 use app\models\Book;
 
-class BookController extends ActiveController
+class BooksController extends ActiveController
 {
     public $modelClass = 'app\models\Book';
 
@@ -15,42 +15,87 @@ class BookController extends ActiveController
     {
         $behaviors = parent::behaviors();
         $behaviors['contentNegotiator']['formats']['application/json'] = Response::FORMAT_JSON;
-        $behaviors['corsFilter'] = [
-            'class' => \yii\filters\Cors::className(),
-            'cors' => [
-                'Origin' => ['http://localhost:4200'],
-                'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
-                'Access-Control-Request-Headers' => ['*'],
-                'Access-Control-Allow-Methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
-                'Allow' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
-                'Access-Control-Allow-Credentials' => null,
-                'Access-Control-Max-Age' => 86400,
-                'Access-Control-Expose-Headers' => []
-            ]
-    
-        ];
         return $behaviors;
     }    
+    public function actionIndex() {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+    
+        $books = Book::find()->all();
+    
+        return $books;
+    }
     
     public function actionGetBooks() {
         Yii::$app->response->format = Response::FORMAT_JSON;
-
-        // Получаем параметры запроса
-        $searchQuery = Yii::$app->request->get('searchQuery');
-        $authors = Yii::$app->request->get('authors');
-        $languages = Yii::$app->request->get('languages');
-        $pages = Yii::$app->request->get('pages');
-        $genre = Yii::$app->request->get('genre');
-
-        // Выполняем логику для фильтрации книг и возвращаем результат
-        $books = YourBookModel::find()
-            ->andFilterWhere(['like', 'title', $searchQuery])
-            ->andFilterWhere(['in', 'author_id', explode(',', $authors)])
-            ->andFilterWhere(['in', 'language', explode(',', $languages)])
-            ->andFilterWhere(['in', 'pages', explode(',', $pages)])
-            ->andFilterWhere(['genre' => $genre])
-            ->all();
-
+    
+        $searchQuery = Yii::$app->request->get('searchQuery', '');
+        $searchAuthors = Yii::$app->request->get('searchAuthors', '');
+        $searchLanguages = Yii::$app->request->get('searchLanguages', '');
+    
+        $query = Book::find();
+    
+        if (!empty($searchQuery)) {
+            $query->andWhere(['OR', 
+                ['ILIKE', 'title', $searchQuery],
+                ['ILIKE', 'description', $searchQuery]
+            ]);
+        }
+    
+        if (!empty($searchAuthors)) {
+            $authorsArray = explode(',', $searchAuthors);
+            $query->andWhere(['IN', 'author_id', $authorsArray]);
+        }
+    
+        if (!empty($searchLanguages)) {
+            $languagesArray = explode(',', $searchLanguages);
+            $query->andWhere(['IN', 'language', $languagesArray]);
+        }
+    
+        $books = $query->all();
+    
         return $books;
+    }
+    
+    public function actionGetAuthors() {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $authors = Book::find()->select(['author_id'])->distinct()->asArray()->all();
+        
+        $authorValues = array_column($authors, 'author_id');
+        
+        return $authorValues;
+    }
+    public function actionGetLanguages() {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $languages = Book::find()->select(['language'])->distinct()->asArray()->all();
+        
+        $languageValues = array_column($languages, 'language');
+        
+        return $languageValues;
+    }
+    public function actionGetGenres() {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $genres = Book::find()->select(['genre'])->distinct()->asArray()->all();
+        
+        $genreValues = array_column($genres, 'genre');
+        
+        return $genreValues;
+    }
+    
+    public function actionCreateBook() {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $postData = Yii::$app->request->getBodyParams();
+
+        $book = new Book();
+        $book->load($postData, '');
+        
+        if ($book->save()) {
+            return $book;
+        } else {
+            return ['error' => 'Unable to create the book.', 'errors' => $book->getErrors()];
+        }
     }
 }

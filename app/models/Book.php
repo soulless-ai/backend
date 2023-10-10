@@ -1,27 +1,36 @@
 <?php
 
-namespace backend\models;
+namespace app\models;
 
-use yii\db\ActiveRecord;
+use Yii;
 
-class Book extends ActiveRecord
+class Book extends \yii\db\ActiveRecord
 {
-    // Определение таблицы, к которой относится модель
     public static function tableName()
     {
         return 'books';
     }
 
-    // Определение правил валидации для атрибутов модели
     public function rules()
     {
         return [
-            [['title', 'author', 'pageCount', 'language', 'genre', 'description'], 'required'],
-            [['pageCount'], 'integer'],
-            [['title', 'author', 'language', 'genre'], 'string', 'max' => 255],
+            [['title', 'author_id', 'pages', 'description'], 'required'],
+            [['pages'], 'integer'],
+            [['title', 'language', 'genre_id', 'author_id', ], 'string', 'max' => 255],
             [['description'], 'string'],
         ];
     }
 
-    // Другие методы и отношения между моделями могут быть определены здесь
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'title' => 'Название',
+            'author_id' => 'ID Автора',
+            'pages' => 'Количество страниц',
+            'language' => 'Язык',
+            'genre_id' => 'ID Жанра',
+            'description' => 'Описание',
+        ];
+    }
 }

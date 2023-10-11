@@ -50,5 +50,9 @@ return [
             'showScriptName' => false,
             'rules' => require(__DIR__ . '/routes.php'), 
         ],
+        'queue' => [
+            'class' => 'yii\queue\file-queue\FileQueue',
+            'path' => '@runtime/queue',
+        ],
     ],
 ];
